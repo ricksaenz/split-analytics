@@ -46,7 +46,7 @@ module Split
 
         ga('create', '#{account}', {cookieDomain: '#{domain_url}'}); 
         ga('send', 'pageview');
-        #{univeral_custom_variables}
+        #{universal_custom_variables}
         </script>
         <!-- End Google Analytics -->
                  

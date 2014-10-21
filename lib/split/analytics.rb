@@ -29,6 +29,31 @@ module Split
       code = raw(code)if defined?(raw)
       code
     end
+    
+    def universal_tracking_code(options={})
+      # needs more options: http://code.google.com/apis/analytics/docs/gaJS/gaJSApi.html
+      account = options.delete(:account)
+      domain_url = options.delete(:domain_url)
+
+      code = <<-EOF
+        
+        <!-- Google Analytics -->
+        <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', '#{account}', {cookieDomain: '#{domain_url}'}); 
+        ga('send', 'pageview');
+        #{univeral_custom_variables}
+        </script>
+        <!-- End Google Analytics -->
+                 
+      EOF
+      code = raw(code)if defined?(raw)
+      code
+    end    
 
     def custom_variables
       return nil if session[:split].nil?
@@ -39,6 +64,16 @@ module Split
       arr.reverse[0..4].reverse.join("\n")
     end
 
+    def universal_custom_variables
+      # ga('set', 'dimension1', 'Paid');
+      return nil if session[:split].nil?
+      arr = []
+      session[:split].each_with_index do |h,i|
+        arr << "        ga(['set', '#{h[0]}', '#{h[1]}']);"
+      end
+      arr.reverse[0..4].reverse.join("\n")
+    end
+    
     private
 
       def insert_tracker_methods(tracker_methods)
@@ -68,7 +103,35 @@ module Split
         end
         arr.join("\n")
       end
-  end
+
+      def insert_universal_tracker_methods(universal_tracker_methods)
+        return nil if tracker_methods.nil?
+        arr = []
+        tracker_methods.each do |k,v|
+          if v.class == String && v.empty?
+            # No argument tracker method
+            arr << "_gaq.push(['" + "_" + "#{k}']);"
+          else
+            case v
+            when String
+              # String argument tracker method
+              arr << "_gaq.push(['" + "_" + "#{k}', '#{v}']);"
+            when TrueClass
+              # Boolean argument tracker method
+              arr << "_gaq.push(['" + "_" + "#{k}', #{v}]);"
+            when FalseClass
+              # Boolean argument tracker method
+              arr << "_gaq.push(['" + "_" + "#{k}', #{v}]);"
+            when Array
+              # Array argument tracker method
+              values = v.map { |value| "'#{value}'" }.join(', ')
+              arr << "_gaq.push(['" + "_" + "#{k}', #{values}]);"
+            end
+          end
+        end
+        arr.join("\n")
+      end      
+  end  
 end
 
 module Split::Helper

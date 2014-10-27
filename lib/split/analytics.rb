@@ -149,12 +149,12 @@ module Split
       def test_version(ver)
         unless ver.nil?
           if /\A[-+]?\d+\z/ === ver.split(":")[0]
-            "v#{ver.split(":")[0]}"
+            "#{ver.split(":")[0]}"
           else
-            "v1"
+            "0"
           end
         else
-          "v1"
+          "0"
         end  
       end
       

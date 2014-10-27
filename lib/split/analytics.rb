@@ -70,9 +70,11 @@ module Split
       # ga('set', 'dimension1', 'Paid');
       return nil if session[:split].nil?
       arr = []
+      arr << "ga('set', "
       session[:split].each_with_index do |h,i|
-        arr << "ga('set', '#{dimension}', '#{h[0].split(":")[0]},#{test_version(h[0].split(":")[1])},#{complete(h[0],h[1])},#{alt_percent(h[0],h[1])}');"
+        arr << "'#{dimension}', '#{h[0].split(":")[0]}-#{test_version(h[0].split(":")[1])}-#{complete(h[0],h[1])}-#{alt_percent(h[0],h[1])}')"
       end
+      arr << ";"
       arr.reverse[0..4].reverse.join("\n")
     end
     

@@ -147,13 +147,15 @@ module Split
       end 
       
       def test_version(ver)
-        if ver.nil?
-          "v1"
-        elsif /\A[-+]?\d+\z/ === ver
-          "v#{ver}"
+        unless ver.nil?
+          if /\A[-+]?\d+\z/ === ver.split(":")[0]
+            "v#{ver.split(":")[0]}"
+          else
+            "v1"
+          end
         else
-          ver
-        end    
+          "v1"
+        end  
       end
       
       def complete(name,alt)

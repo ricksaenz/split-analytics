@@ -67,14 +67,16 @@ module Split
     end
 
     def universal_custom_variables(dimension)
-      # ga('set', 'dimension1', 'Paid');
+      # ga('send', 'pageview', {
+      #   'dimension15':  'My Custom Dimension'  <-- what we want to send
+      # });
       return nil if session[:split].nil?
       arr = []
-      arr << "ga('set', '#{dimension}', '"
+      arr << "'#{dimension}': '"
       session[:split].each_with_index do |h,i|
         arr << "#{h[0].split(":")[0]}-#{alternative(h[0],h[1])}-#{test_version(h[0].split(":")[1])}-#{alt_percent(h[0],h[1])} "
       end
-      arr << " ');"
+      arr << "'"
       arr.reverse[0..25].reverse.join("")
     end
     

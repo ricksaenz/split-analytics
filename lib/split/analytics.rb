@@ -163,7 +163,6 @@ module Split
       end
       
       def alternative(name,alt)
-        debugger
         if name.include?"finished"
           session[:split].each_with_index do |a,b|
             if a[0].include? name.split(':')[0]

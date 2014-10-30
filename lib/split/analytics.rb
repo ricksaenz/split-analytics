@@ -163,10 +163,16 @@ module Split
       end
       
       def alternative(name,alt)
+        debugger
         if name.include?"finished"
-          "finished"
+          session[:split].each_with_index do |a,b|
+            if a[0].include? name.split(':')[0]
+             alt = a[1] unless a[0].include? "finished"
+            end
+          end           
+          "#{alt}-finished"
         else
-          alt           
+          "#{alt}-active"          
         end  
       end
   end  

@@ -74,7 +74,7 @@ module Split
       arr = []
       arr << "'#{dimension}': '"
       session[:split].each_with_index do |h,i|
-        arr << "#{h[0].split(":")[0]}-#{alternative(h[0],h[1])}-#{test_version(h[0].split(":")[1])}-#{alt_percent(h[0],h[1])} "
+        arr << "#{h[0].split(":")[0]}-#{alternative(h[0],h[1])}-#{test_version(h[0].split(":")[1])}-#{alt_percent(h[0],h[1])} " if show_finished?(h[0],h[1])
       end
       arr << "'"
       arr.reverse[0..25].reverse.join("")
@@ -174,6 +174,19 @@ module Split
           "#{alt}-active"          
         end  
       end
+      
+      def show_finished?(name,alt)
+        if name.include?"finished"
+          session[:split].each_with_index do |a,b|
+            if a[0].include? name.split(':')[0]
+              return true unless a[0].include? "finished"  # true if name exist in session excluding :finished
+            end
+          end
+        else
+          return true
+        end  
+        false
+      end  
   end  
 end
 
